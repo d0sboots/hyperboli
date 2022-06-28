@@ -113,18 +113,17 @@ function initGLState() {
         color = vec4(0.0, 0.0, 0.0, 1.0);
         return;
       }
+      // This is a pile of stuff to anti-alias the sharp lines in the spinner,
+      // and avoid branches while doing it.
       float head_dist = length(vec2(coords.x, coords.y - middleRadius));
       float gradient = atan(coords.x, -coords.y) / (2.0 * PI) + 0.5;
-      if (coords.x < 0.0 && head_dist < headRadius + aliasUnit) {
-        float step = smoothstep(headRadius - aliasUnit, headRadius + aliasUnit, head_dist);
-        float grey = gradient * step + 1.0 - step;
-        color = vec4(grey, grey, grey, 1.0);
-        return;
-      }
-      bool test = dist < 1.0 - aliasUnit;
-      float edge0 = test ? innerRadius - aliasUnit : 1.0 + aliasUnit;
-      float edge1 = test ? innerRadius + aliasUnit : 1.0 - aliasUnit;
-      float grey = gradient * smoothstep(edge0, edge1, dist);
+      bool in_head = coords.x < 0.0 && head_dist < headRadius + aliasUnit;
+      float radiusPart = in_head ? headRadius : innerRadius;
+      bool test = dist < 1.0 - aliasUnit || in_head;
+      float edge0 = test ? radiusPart - aliasUnit : 1.0 + aliasUnit;
+      float edge1 = test ? radiusPart + aliasUnit : 1.0 - aliasUnit;
+      float step = smoothstep(edge0, edge1, in_head ? head_dist : dist);
+      float grey = gradient * step + (in_head ? 1.0 - step : 0.0);
       color = vec4(grey, grey, grey, 1.0);
     }`,
     ["position"],
@@ -148,7 +147,7 @@ const projectionMatrix = Float32Array.from([
 ]);
 // Adjust for antialiasing in an isotropic fashion.
 // No mathematical basis, this was tuned to look good.
-const unitAdjust = 1.7;
+const unitAdjust = 1.55;
 
 function animate(time) {
   requestAnimationFrame(animate);
@@ -189,6 +188,7 @@ function animate(time) {
 }
 
 const error_text = document.getElementById("error_text");
+const error_text2 = document.getElementById("error_text2");
 if (gl !== null) {
   canvas.style.display = "initial";
   error_text.style.display = "none";
