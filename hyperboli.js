@@ -206,7 +206,7 @@ function initGLStateParaLines() {
 }
 
 var first_time; // First animation time
-var last_time;  // Last animation time
+var last_time = 0;  // Last animation time
 var gl_state;
 const values = new Array(5);
 let current = 0;
@@ -229,7 +229,7 @@ function animateSpinner(time) {
     // Same frame, don't re-render.
     return;
   }
-  values[current] = last_time - time;
+  values[current] = time - last_time;
   last_time = time;
 
   gl.useProgram(gl_state.shaders.square.program);
@@ -258,14 +258,13 @@ function animateSpinner(time) {
   gl.drawArrays(gl.TRIANGLE_FAN, 0, gl_state.buffers.vertexCount);
 
   let res = ""
-  for (let i = 0; i < 5; ++i) {
+  for (let i = 0; i < 10; ++i) {
+    const big = values[i] > 21;
+    res += big ? "X" : " ";
     res += values[i]?.toFixed(6);
-    if (i === current) {
-      res += " X";
-    }
-    res += "\n";
+    res += big ? "X" : " ";
   }
-  current = (current + 1) % 5;
+  current = (current + 1) % 10;
   content.textContent = res;
 }
 
