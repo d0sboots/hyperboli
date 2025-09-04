@@ -3,14 +3,15 @@
 <head>
   <title>Hyperboli</title>
 </head>
-<body style="border:0; margin:0; height:100%; display:flex; background-color:black">
-  <canvas id="canvas" style="width:100%; height:100%; display:none"></canvas>
+<body style="border:0; margin:0; height:100%; display:flex; flex-flow:column; background-color:black">
+  <canvas id="canvas" style="display:none"></canvas>
   <div style="margin:auto">
     <div id="error_text" style="color:white; font-size:5vw; text-align:center">
       <noscript>Javascript is disabled</noscript>
     </div>
     <div id="error_text2" style="color:#ddd; font-size:2vw; text-align:center"></div>
   </div>
+  <pre id=content style="margin:0; color:white">foo</pre>
   <script src="https://greggman.github.io/webgl-lint/webgl-lint.js" defer=true></script>
   <script src="hyperboli.js"></script>
 </body>
